@@ -1,0 +1,68 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			// Make .o files of the src folder ()
+			"type": "cppbuild",
+			"label": "C/C++: Make Object Files (.o)",
+			"command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+			"args": [
+				"-c",
+				"-std=c++20",
+				"${workspaceFolder}/src/*.cpp"                                    		
+			],
+			"options": {
+				"cwd": "${workspaceFolder}\\Object Files"		// Directory where the cmd args are executed
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+		
+			},
+			"detail": "C/C++: Make Object Files (.o)"
+		},
+
+		{
+			// Make Archive Files (.a)
+			"type": "cppbuild",
+			"label": "C/C++: Make Archive Library (.a)",
+			"command": "ar",
+			"args": [
+				"rcs",
+				"${workspaceFolder}\\libRST.a",							
+				"${workspaceFolder}\\Object Files\\*.o"                               
+			],
+			"options": {
+				"cwd": "${fileDirname}"		// Directory where the cmd args are executed
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+			
+			},
+			"detail": "C/C++: Make Archive Library (.a)"
+		},
+		
+		{
+			// Run My Batch File
+			"type": "cppbuild",
+			"label": "C/C++: Run My Batch File",
+			"command": "Compile, Archive, Copy.bat",
+			"args": [
+				                 
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"		// Directory where the cmd args are executed
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"isDefault": true,
+			},
+			"detail": "Run My Batch File"
+		}		
+	]
+}
