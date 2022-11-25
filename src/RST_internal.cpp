@@ -1,5 +1,9 @@
 #include "RST_internal.h"
 
+#include "Files.h"
+#include <iostream>
+#include <iomanip>
+
 
 #pragma warning(disable : 4996)		// Disables warning of using of time_t and tm in creating the Log file name
 
