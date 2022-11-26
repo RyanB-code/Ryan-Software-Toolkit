@@ -1,7 +1,9 @@
 #ifndef RST_INTERNAL_H
 #define RST_INTERNAL_H
 
-
+#define ASSERT(msg) \
+std::cerr << "\n\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
+std::terminate();
 
 #include "RST.h"
 
@@ -9,21 +11,15 @@
 #include <sstream>
 
 
-#define ASSERT(msg) \
-std::cerr << "\n\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
-std::terminate();
-
-
-
 class LogEntry{
 public:
 	LogEntry(std::string msg, LogCode code);
 	~LogEntry() {};
 
-    std::string m_msg;
-	LogCode m_code;
+    const std::string 	m_msg;
+	const LogCode 		m_code;
 
-	std::string str();
+	std::string str() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const LogEntry& log);
 
@@ -43,18 +39,18 @@ public:
 	inline const std::string& 	getDirectory()			const { return m_DIRECTORY;		}
 	inline const std::string& 	getLogDirectory()		const { return m_LOG_DIRECTORY; }
 	inline const std::string& 	getLogFile()			const { return m_LOGFILE;		}
-
 	inline const LogLevel& 	  	getLogLevel()			const { return m_logLevel;		}
 	inline const LogTarget& 	getLogTarget()			const { return m_logTarget;		}
 
 	const void getFormattedLogs(std::vector<std::string>& list)	const;
 
+
 	// Setter functions
-	inline void SetLogTarget	(LogTarget	target) { m_logTarget = target; }
-	inline void SetLogLevel		(LogLevel	level)	{ m_logLevel = level;   }
+	inline void SetLogTarget	(const LogTarget target) 	{ m_logTarget = target; }
+	inline void SetLogLevel		(const LogLevel	 level)		{ m_logLevel = level;   }
 
 	// Adds to List of Logs
-	bool AddLog(std::string msg, LogCode code);
+	bool Log(const std::string msg, const LogCode code);
 
 
 	friend bool RST::init(std::string parentDirectory);
@@ -69,13 +65,13 @@ private:
 
 
 	LogTarget	m_logTarget	{ LogTarget::CONSOLE };
-	LogLevel	m_logLevel	{ LogLevel::ALL };
+	LogLevel	m_logLevel	{ LogLevel::NORMAL };
 
 	const time_t m_initTime{ time(0) };
 
 	void SetPaths(std::string parentPath);	// Initialize Parent Paths
-	bool LogToFile();		// Takes the most recent entry in s_LogList and outputs to file
-	void LogToConsole();	// Takes the most recent entry in s_LogList and outputs to console
+	bool LogToFile		(const LogEntry& log);	// Outputs to file
+	void LogToConsole	(const LogEntry& log);	// Outputs to console
 };	
 
 
@@ -85,6 +81,9 @@ RST_Application APPLICATION{};	 // Global State Variable for use everywhere
 
 std::string CreateLogFileName(time_t exactTIme);	// Returns string in format 12-DEC-2022_13:14:09 (Hour:Min:Sec)
 void RST_Log(std::string msg);
+
+// If App's m_logLevel allows the buffer's m_logCode to be written, return true
+bool FilterLog(const LogCode code);
 
 
 #endif

@@ -9,11 +9,15 @@
 
 // --------------------
 
-// enums --------------------------------------------
-
+enum class LogTarget {
+    FILE,			// Will show everything BUT runtime logs
+    CONSOLE,		// Default. Will show runtime logs
+    ALL				// If this is chosen, will log to console and file
+};
 enum class LogCode {
-    FATAL,			// Appliation cannot continue. Exits application execution after logging
+    FATAL,			// Appliation cannot continue. Exits application with ASSERT after logging
     WARNING,		// Undesirable event, but can still proceed
+	ERROR, 			// Error occurred and function cannot continue
    
     // Will be written to Log file
     LOG_LOW,        // Low importance       - Ex: Setting variables. Get an idea of current execution place
@@ -21,37 +25,27 @@ enum class LogCode {
     LOG_HIGH,       // High importance      - Ex: Function completed, show iteration status
 
 
-    // Will not be written to Logfile
-    RUNTIME_LOW,        // Low importance       - Ex: Setting variables. Get an idea of current execution place
-    RUNTIME_MED,        // Medium importance    - Ex: To show if something passed/failed an if statement
-    RUNTIME_HIGH,       // High importance      - Ex: Function completed, show iteration status
+    // Will not be written to Log file
+    RUNTIME_LOW,     // Low importance       - Ex: Setting variables. Get an idea of current execution place
+    RUNTIME_MED,     // Medium importance    - Ex: To show if something passed/failed an if statement
+    RUNTIME_HIGH,    // High importance      - Ex: Function completed, show iteration status
 
-    RETURN,			// Used in conjunction with function to categorize that msg along with the return
+//  RETURN,			// Used in conjunction with function to categorize that msg along with the return
 
     RST,            // An error happened internal in the Ryan Software Toolkit
 };
+enum class LogLevel {
+    ALL     = 0,    // Shows every LogCode
+    FATAL   = 1,    // Shows FATAL LogCodes
+    NORMAL  = 2,    // Shows FATAL, WARNING and ERROR LogCodes
 
-enum class LogTarget {
-    FILE,			// Will show everything BUT runtime logs
-    CONSOLE,		// Default is console only, will show runtime logs
-    ALL				// If this is chosen, will show to all
+//  RETURN  = 2,
+
+    HIGH    = 3,    // Shows FATAL, WARNING, ERROR and HIGH LogCodes
+    MED     = 4,    // Shows FATAL, WARNING, ERROR, HIGH and MED LogCodes
+    LOW     = 5,    // Shows FATAL, WARNING, ERROR, HIGH. MED and LOW LogCodes
 };
 
-// Choose which logs are displayed. Higher levels display all lower levels
-// Range 0 to 4
-enum LogLevel {
-    ALL     = 0,
-
-// Uses this later
-/*
-    FATAL   = 1,
-    RETURN  = 2,
-    LOG     = 3,
-    RUNTIME = 4,
-*/
-};
-
-// --------------------------------------------------
 
 
 namespace RST {
@@ -66,10 +60,10 @@ namespace RST {
     // Logging --------------------------------------
    
     // Writes a debug log to the specified output target
-    bool Log(std::string msg, LogCode code);
+    bool Log(const std::string msg, const LogCode code);
 
     // Specifies where to output all Logs. Default is to the console only
-    void SetLogTarget(const LogTarget target=LogTarget::CONSOLE);
+    void SetLogTarget(const LogTarget target);
 
     // Specifies what logs to display. Levels include all of the above levels.
     void SetLogLevel(const LogLevel level);

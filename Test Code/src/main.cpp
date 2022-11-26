@@ -6,17 +6,19 @@
 
 int main(){
 
-    RST::SetLogTarget(LogTarget::FILE);
     RST::init("C:\\dev\\1. Project Development Files");
-    //RST::init();
 
-    RST::Log("Test MSG", LogCode::LOG_HIGH);
-    RST::Log("Test MSG 2", LogCode::LOG_LOW);
-    RST::Log("Test MSG 3", LogCode::LOG_MED);
+    RST::SetLogTarget(LogTarget::CONSOLE);
+    RST::SetLogLevel(LogLevel::ALL);
 
-    
-    RST::Log("Test MSG 4", LogCode::LOG_LOW);
-    RST::Log("Test MSG 5", LogCode::LOG_MED);
+    RST::Log("Fatal", LogCode::FATAL);
+    RST::Log("Warning", LogCode::WARNING);
+    RST::Log("Error", LogCode::ERROR);
+
+    RST::Log("Run High", LogCode::RUNTIME_HIGH);
+    RST::Log("Log High", LogCode::LOG_HIGH);
+    RST::Log("Log Med", LogCode::LOG_MED);
+
 
 
     return 0;
