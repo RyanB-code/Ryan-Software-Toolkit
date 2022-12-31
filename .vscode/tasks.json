@@ -49,7 +49,7 @@
 			// Run My Batch File
 			"type": "cppbuild",
 			"label": "C/C++: Run My Batch File",
-			"command": "Compile, Archive, Copy.bat",
+			"command": "Compile, Archive, Copy to Test.bat",
 			"args": [
 				                 
 			],
@@ -60,7 +60,7 @@
 				"$gcc"
 			],
 			"group": {
-				"isDefault": true,
+				"isDefault": false,
 			},
 			"detail": "Run My Batch File"
 		}		

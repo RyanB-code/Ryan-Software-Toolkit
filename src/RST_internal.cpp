@@ -70,6 +70,18 @@ bool RST_Application::Log(const std::string msg, const LogCode code) {
 	LogEntry* buffer = new LogEntry(msg, code);		// Make LogEntry buffer
 	s_logList.push_back(*buffer);					// Add to list of known logs;
 
+	// If UserLogVector is defined write logs to it
+	if(m_UserLogVector){
+		// If the user vector is != one below the logList, write all logs to user vector
+		if(m_UserLogVector->size() != s_logList.size() - 1){
+			*m_UserLogVector = getFormattedLogs();
+		}
+		// If user vector is one below (it should be since we just added one more log before this if statement), add the new log to user vector
+		else{
+			m_UserLogVector->push_back(buffer->str());
+		}
+	}
+
 
 	// Filter LogEntry to see if it should be outputted based on current LogTarget and LogLevel
 	if(FilterLog(buffer->m_code)){
@@ -114,15 +126,19 @@ bool RST_Application::Log(const std::string msg, const LogCode code) {
 						success = LogToFile(*buffer);
 					break;
 					default:
-						RST_Log("Could not find LogTarget");
+						ASSERT("RST_Application::Log() - could not find LogTarget");
 						success = false;
 					break;
 				}
 			break;
+			default:
+				ASSERT("RST_Application::Log() - could not find LogCode to decide where to output");
+				success = false;
+			break;
 		}
 
 		delete tgt;
-		
+
 	}
 	else{
 		// Do Nothing
@@ -174,15 +190,18 @@ void RST_Application::LogToConsole(const LogEntry& log){
 
 	return;
 }
-const void RST_Application::getFormattedLogs(std::vector<std::string>& list) const {
+const std::vector<std::string> RST_Application::getFormattedLogs() const {
+
+	std::vector<std::string> buffer{};
+
 	for(LogEntry log : s_logList){
 		std::ostringstream os;
 
 		os << log;
-		list.push_back(os.str());
+		buffer.push_back(os.str());
 	}
 
-	return;
+	return buffer;
 }
 
 // Helper functions
@@ -434,8 +453,28 @@ namespace RST {
 		APPLICATION.SetLogLevel(level);
 		return;
 	}
-	void GetFormattedLogs(std::vector<std::string>& list){
-		return APPLICATION.getFormattedLogs(list);
+	void SetLogVector(std::vector<std::string>* vector){
+		static bool alreadyCalled { false };
+
+		if(!APPLICATION.getLogVector()){
+			alreadyCalled = false;
+		}
+
+		if(!alreadyCalled){
+			APPLICATION.SetUserLogVector(vector);
+			RST::Log("User has defined a vector to store logs", LogCode::RST);
+			alreadyCalled = true;
+		}
+		else{
+			RST::Log("Log Vector has already been initialized and not yet deleted using RST::DeleteLogVector(). Cannot redefine. Stopping execution.", LogCode::RST);
+			ASSERT("Log Vector has already been initialized and not yet deleted using RST::DeleteLogVector(). Did you call this function twice?");
+		}
+		
+		return;
+	}
+	void DeleteLogVector(){
+		APPLICATION.SetUserLogVector(nullptr);
+		RST::Log("User defined Log vector was set to nullptr", LogCode::RST);
 	}
 }
 // ---

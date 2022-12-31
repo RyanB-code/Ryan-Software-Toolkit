@@ -2,7 +2,7 @@
 #define RST_INTERNAL_H
 
 #define ASSERT(msg) \
-std::cerr << "\n\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
+std::cerr << "\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
 std::terminate();
 
 #include "RST.h"
@@ -36,27 +36,29 @@ public:
 	~RST_Application();
 
 	// Getter functions
-	inline const std::string& 	getDirectory()			const { return m_DIRECTORY;		}
-	inline const std::string& 	getLogDirectory()		const { return m_LOG_DIRECTORY; }
-	inline const std::string& 	getLogFile()			const { return m_LOGFILE;		}
-	inline const LogLevel& 	  	getLogLevel()			const { return m_logLevel;		}
-	inline const LogTarget& 	getLogTarget()			const { return m_logTarget;		}
+	inline const std::string& 				getDirectory()		const { return m_DIRECTORY;		}
+	inline const std::string& 				getLogDirectory()	const { return m_LOG_DIRECTORY; }
+	inline const std::string& 				getLogFile()		const { return m_LOGFILE;		}
+	inline const LogLevel& 	  				getLogLevel()		const { return m_logLevel;		}
+	inline const LogTarget& 				getLogTarget()		const { return m_logTarget;		}
+	inline const std::vector<std::string>* 	getLogVector() 		const { return m_UserLogVector; }
 
-	const void getFormattedLogs(std::vector<std::string>& list)	const;
+	const std::vector<std::string> getFormattedLogs()	const;
 
 
 	// Setter functions
-	inline void SetLogTarget	(const LogTarget target) 	{ m_logTarget = target; }
-	inline void SetLogLevel		(const LogLevel	 level)		{ m_logLevel = level;   }
+	inline void SetLogTarget		(const LogTarget target) 			{ m_logTarget = target; }
+	inline void SetLogLevel			(const LogLevel	 level)				{ m_logLevel = level;   }
+	inline void SetUserLogVector	(std::vector<std::string>* v)		{ m_UserLogVector = v; }
 
 	// Adds to List of Logs
 	bool Log(const std::string msg, const LogCode code);
 
-
 	friend bool RST::init(std::string parentDirectory);
 
 private:
-	static std::vector<LogEntry> s_logList;		// List of all logs in the instance
+	static 	std::vector<LogEntry> 		s_logList;			// List of all logs in the instance
+			std::vector<std::string>* 	m_UserLogVector { nullptr };	// User defined vector of strings. will be updated with each new log
 
 	bool m_init {false};
 	std::string m_DIRECTORY;
