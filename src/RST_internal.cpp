@@ -86,19 +86,19 @@ bool RST_Application::Log(const std::string msg, const LogCode code) {
 	// Filter LogEntry to see if it should be outputted based on current LogTarget and LogLevel
 	if(FilterLog(buffer->m_code)){
 
-		LogTarget* tgt = new LogTarget(APPLICATION.getLogTarget()); // Buffer to get LogTarget
+		LogTarget* logTarget = new LogTarget(APPLICATION.getLogTarget()); // Buffer to hold current LogTarget state
 
-		// If so far the LogLevel and parameter LogCode allows, write see if its RUNTIME LogCode
+		// If so far the LogLevel and parameter LogCode allows, see if its a RUNTIME LogCode
 		switch(code){
 			case 	LogCode::RUNTIME_HIGH: 
 			case 	LogCode::RUNTIME_MED: 
 			case 	LogCode::RUNTIME_LOW: 
 
-				if(*tgt == LogTarget::CONSOLE){
+				if(*logTarget == LogTarget::CONSOLE){
 					LogToConsole(*buffer);			
 					success = true;
 				}
-				else if (*tgt == LogTarget::ALL){
+				else if (*logTarget == LogTarget::ALL){
 					LogToConsole(*buffer); 			// Log just to console
 				}
 				
@@ -113,7 +113,7 @@ bool RST_Application::Log(const std::string msg, const LogCode code) {
 			case LogCode::RST:
 
 				// Output LogEntry to where its needed
-				switch(*tgt){
+				switch(*logTarget){
 					case LogTarget::ALL:
 						LogToConsole(*buffer);
 						success = LogToFile(*buffer);
@@ -126,18 +126,23 @@ bool RST_Application::Log(const std::string msg, const LogCode code) {
 						success = LogToFile(*buffer);
 					break;
 					default:
-						ASSERT("RST_Application::Log() - could not find LogTarget");
+						RST_ASSERT("RST_Application::Log() - could not find LogTarget");
 						success = false;
 					break;
 				}
 			break;
 			default:
-				ASSERT("RST_Application::Log() - could not find LogCode to decide where to output");
+				RST_ASSERT("RST_Application::Log() - could not find LogCode to decide where to output");
 				success = false;
 			break;
 		}
 
-		delete tgt;
+		delete logTarget;
+
+		// If LogCode is fatal, write message and exit application:
+		if(code == LogCode::FATAL){
+			FATAL_ASSERT(buffer->m_msg);
+		}
 
 	}
 	else{
@@ -164,7 +169,7 @@ bool RST_Application::LogToFile(const LogEntry& log){
 		}
 
 		RST_Log("RST Files were not initialized. Meant for file:  " + buffer);
-		ASSERT("RST was not initialized.");
+		RST_ASSERT("RST was not initialized.");
 		return false;
 	}
 
@@ -382,7 +387,7 @@ bool FilterLog(const LogCode code){
 			else	{ success = false; 	}
 		break;
 		default:
-			ASSERT("FilterLogLevel() - no LogLevel was found");
+			RST_ASSERT("FilterLogLevel() - no LogLevel was found");
 		break;
 	}
 
@@ -406,7 +411,7 @@ namespace RST {
 		// If RST was already initialized, exit
 		if(APPLICATION.m_init) {
 			RST_Log("Application already initialized");
-			ASSERT("RST::init() called twice. RST was already initialized.")
+			RST_ASSERT("RST::init() called twice. RST was already initialized.")
 			success = false;
 		}
 
@@ -467,7 +472,7 @@ namespace RST {
 		}
 		else{
 			RST::Log("Log Vector has already been initialized and not yet deleted using RST::DeleteLogVector(). Cannot redefine. Stopping execution.", LogCode::RST);
-			ASSERT("Log Vector has already been initialized and not yet deleted using RST::DeleteLogVector(). Did you call this function twice?");
+			RST_ASSERT("Log Vector has already been initialized and not yet deleted using RST::DeleteLogVector(). Did you call this function twice?");
 		}
 		
 		return;

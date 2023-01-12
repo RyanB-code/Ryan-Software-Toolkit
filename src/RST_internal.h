@@ -1,8 +1,8 @@
 #ifndef RST_INTERNAL_H
 #define RST_INTERNAL_H
 
-#define ASSERT(msg) \
-std::cerr << "\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
+#define FATAL_ASSERT(msg) \
+std::cerr << "\nFATAL ERROR has occurred. RST exited application. Message:\n\n" << msg << "\n" <<std::endl; \
 std::terminate();
 
 #include "RST.h"

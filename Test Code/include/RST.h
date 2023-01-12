@@ -17,6 +17,11 @@
 #include <vector>
 
 
+#define RST_ASSERT(msg) \
+std::cerr << "\nASSERTION failed in " << __FILE__ << " line " << __LINE__ << ": " << msg << std::endl; \
+std::terminate();
+
+
 enum class LogTarget {
     FILE,			// Will show everything BUT runtime logs
     CONSOLE,		// Default. Will show runtime logs
